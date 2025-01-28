@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt 
 import sys
 import numpy as np
+import math
 
 class Graph:
 	
@@ -303,6 +304,48 @@ def build_graph(nodefile,edgefile):
 		graph.add_edge(i)
 	
 	return graph
+def draw_bisection(graph,pos):
+	a = graph.A
+	b = graph.B
+	distvals = []
+	for i in a:
+		for j in b:
+			d = math.sqrt((pos[i.name][0]-pos[j.name][0])**2 + (pos[i.name][1]-pos[j.name][1])**2)
+			distvals.append([d,i.name,j.name,pos[i.name],pos[j.name]])
+	distvals.sort()
+	
+	pt1 = distvals[0][3]
+	pt2 = distvals[0][4]
+	pt3 = distvals[1][3]
+	pt4 = distvals[1][4]
+
+	
+	x1 = (pt1[0] + pt2[0])/2
+	y1 = (pt1[1] + pt2[1])/2
+	x2 = (pt3[0] + pt4[0])/2
+	y2 = (pt3[1] + pt4[1])/2
+
+	
+
+	m = (y2-y1)/(x2-x1)
+	#c = y1*x2 - y2*x1
+	c = y1 - m * x1
+
+	return m,c
+
+def draw_bisection_line(nx_graph,pos,m,c):
+
+	x_values = [pos[node][0] for node in nx_graph.nodes()]  # Get x coordinates of all nodes
+	min_x, max_x = min(x_values), max(x_values)
+
+	# Create the x-range for the line
+	x_line = [min_x, max_x]
+	y_line = [m * x + c for x in x_line]  # Calculate the corresponding y-values for the line
+
+	# Plot the line on top of the graph
+	
+	
+	plt.plot(x_line, y_line, color='red', linestyle='--', linewidth=2)
 
 
 		
@@ -334,8 +377,11 @@ def __main__():
 
 
 	nx_graph = graph.to_networkx()
-
-	nx.draw(nx_graph, with_labels=True, node_color="lightgreen", node_size=4000, font_size=12, font_weight="bold", edge_color="blue")
+	pos = nx.spring_layout(nx_graph)
+	m,c= draw_bisection(graph_new,pos)
+	
+	nx.draw(nx_graph, pos, with_labels=True, node_size=500, node_color="skyblue")
+	draw_bisection_line(nx_graph,pos,m,c)
 	plt.show()
 
 if __name__ == "__main__":

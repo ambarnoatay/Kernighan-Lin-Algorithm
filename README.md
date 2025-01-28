@@ -12,5 +12,5 @@ a-b
 c-d  
 
 # Steps to Run: 
-pip install networkx matplotlib
+pip install networkx matplotlib   
 python KL_NoWeights.py <Node File> <Edge File>
